@@ -1,17 +1,23 @@
-name: wercker-elastic
+name: moip-elasticsearch
 version: 0.0.1
+inherits: wercker/ubuntu12.04-webessentials@0.0.3
 type: service
-inherits: wercker/ubuntu12.04-webessentials@1.0.4
 platform: ubuntu@12.04
-description: elasticsearch
+description: box which enables Elasticsearch service.
 keywords:
-  - elasticsearch
+    - elasticsearch
+    - opensource
 packages:
-  - elasticsearch@1.5.2
+    - elasticsearch@1.5.2
 script: |
-  ./provision.sh
+    sudo apt-get update
+    sudo apt-get upgrade
+    sudo wget -O /tmp/elasticsearch-1.5.2.deb https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-1.5.2.deb
+    sudo dpkg -i /tmp/elasticsearch-1.5.2.deb
+    sudo sed -i 's/# http.enabled: false/http.enabled: true/g' /etc/elasticsearch/elasticsearch.yml
+    sudo sed -i 's/# network.host: 192.168.0.1/network.host: $$HOST$$/g' /etc/elasticsearch/elasticsearch.yml
 env:
-  WERCKER_ELASTICSEARCH_VERSION: 1.5.2
-  WERCKER_ELASTICSEARCH_URL: $$HOST$$:9200
-  WERCKER_ELASTICSEARCH_HOST: $$HOST$$
-  WERCKER_ELASTICSEARCH_PORT: 9200
+    WERCKER_ELASTICSEARCH_PORT: 9200
+    WERCKER_ELASTICSEARCH_HOST: $$HOST$$
+    WERCKER_ELASTICSEARCH_URL: $$HOST$$:9200
+    WERCKER_ELASTICSEARCH_VERSION: 1.5.2
